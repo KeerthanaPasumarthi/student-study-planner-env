@@ -1,0 +1,9 @@
+name: student-study-planner
+description: Study planning environment for students
+version: 1.0.0
+
+entrypoint: app.py
+
+observation_model: Observation
+action_model: Action
+reward_model: Reward
