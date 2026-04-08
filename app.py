@@ -1,16 +1,43 @@
+from fastapi import FastAPI
+from environment import StudyPlannerEnvironment
+
+app = FastAPI()
+
+env = StudyPlannerEnvironment()
+
+
+@app.get("/")
+def home():
+    return {"message": "Study Planner API is running"}
+
+
 @app.post("/reset")
 def reset():
-    global current_observation
-
-    current_observation = {
-        "subjects": ["Math", "Physics"],
-        "deadlines": {"Math": 3, "Physics": 5},
-        "study_hours_left": 4,
-        "completed_subjects": [],
-        "current_day": 1
-    }
+    observation = env.reset()
 
     return {
         "message": "Environment reset",
-        "observation": current_observation
+        "observation": observation
+    }
+
+
+@app.get("/state")
+def get_state():
+    return {
+        "observation": env.get_observation()
+    }
+
+
+@app.post("/step")
+def step(action: dict):
+    subject = action.get("subject")
+    hours = action.get("hours", 1)
+
+    observation, reward, done, info = env.step(subject, hours)
+
+    return {
+        "observation": observation,
+        "reward": reward,
+        "done": done,
+        "info": info
     }
